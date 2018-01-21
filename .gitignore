@@ -17,4 +17,4 @@ _book
 tmp
 
 # gitignore
-#.gitignore
+.gitignore
