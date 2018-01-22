@@ -7,7 +7,7 @@
 
   <!-- spring监听 -->
   <listener>
-    <listener-class>org.springframework.web.context.ContextCleanupListener</listener-class>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
   <!-- Spring Beans配置文件所在的目录 -->

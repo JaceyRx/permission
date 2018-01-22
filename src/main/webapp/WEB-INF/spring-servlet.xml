@@ -12,11 +12,15 @@
     <!--这要只要带@controller @service 的注解的bean 就会自动注入spring进行管理-->
     <mvc:annotation-driven />
 
+    <mvc:interceptors>
+        <bean class="com.mmall.common.HttpInterceptor" />
+    </mvc:interceptors>
+
     <!--启动包扫码-->
     <context:component-scan base-package="com.mmall.controller" />
     <context:component-scan base-package="com.mmall.service" />
 
-    <bean class="com.mmall.common.ApplictionContextHelper" lazy-init="false" />
+    <bean class="com.mmall.common.ApplicationContextHelper" lazy-init="false" />
 
     <!--<bean class="org.springframework.web.servlet.mvc.annotation.ResponseStatusExceptionResolver" />-->
 

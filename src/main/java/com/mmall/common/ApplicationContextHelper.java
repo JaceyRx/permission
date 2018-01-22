@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @create 2018/1/21 16:31
  */
 @Component("ApplictionContextHelper")
-public class ApplictionContextHelper implements ApplicationContextAware {
+public class ApplicationContextHelper implements ApplicationContextAware {
 
     private static ApplicationContext applicationContext;
 

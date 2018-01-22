@@ -1,6 +1,6 @@
 package com.mmall.controller;
 
-import com.mmall.common.ApplictionContextHelper;
+import com.mmall.common.ApplicationContextHelper;
 import com.mmall.common.JsonData;
 import com.mmall.dao.SysAclModuleMapper;
 import com.mmall.dao.TestDAO;
@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.Map;
 
 /**
+ * controller测试类
  * @auther ruanjunxu
  * @email ruanjunxu@qq.com
  * @create 2018/1/20 13:43
@@ -29,8 +30,6 @@ import java.util.Map;
 @Slf4j
 public class TestController {
 
-    @Autowired
-    private SysAclModuleMapper sysAclModuleMapper;
 
     @RequestMapping("/hello.json")
     @ResponseBody
@@ -55,7 +54,7 @@ public class TestController {
 //
 //        }
 
-        SysAclModuleMapper moduleMapper = ApplictionContextHelper.popBean(SysAclModuleMapper.class);
+        SysAclModuleMapper moduleMapper = ApplicationContextHelper.popBean(SysAclModuleMapper.class);
         SysAclModule module = moduleMapper.selectByPrimaryKey(1);
         log.info(JsonMapper.obj2String(module));
         // 参数校验
