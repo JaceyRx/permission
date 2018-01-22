@@ -18,7 +18,7 @@
 
     <!--启动包扫码-->
     <context:component-scan base-package="com.mmall.controller" />
-    <context:component-scan base-package="com.mmall.service" />
+    <context:component-scan base-package="com.mmall.service.impl" />
 
     <bean class="com.mmall.common.ApplicationContextHelper" lazy-init="false" />
 

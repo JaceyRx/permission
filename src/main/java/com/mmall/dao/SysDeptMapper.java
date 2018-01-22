@@ -2,6 +2,8 @@ package com.mmall.dao;
 
 import com.mmall.model.SysDept;
 
+import java.util.List;
+
 public interface SysDeptMapper {
     int deleteByPrimaryKey(Integer id);
 
@@ -14,4 +16,10 @@ public interface SysDeptMapper {
     int updateByPrimaryKeySelective(SysDept record);
 
     int updateByPrimaryKey(SysDept record);
+
+    /**
+     * 获取全部部门
+     * @return
+     */
+    List<SysDept> getAllDept();
 }
