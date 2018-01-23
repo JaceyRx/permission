@@ -42,7 +42,7 @@ public class JsonData {
     }
 
     public static JsonData fail(String msg) {
-        JsonData jsonData = new JsonData(true);
+        JsonData jsonData = new JsonData(false);
         jsonData.msg = msg;
         return jsonData;
     }

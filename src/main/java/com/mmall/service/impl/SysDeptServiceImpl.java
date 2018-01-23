@@ -8,11 +8,14 @@ import com.mmall.param.DeptParam;
 import com.mmall.service.SysDeptService;
 import com.mmall.util.BeanValidator;
 import com.mmall.util.LevelUtil;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @auther ruanjunxu
@@ -53,9 +56,11 @@ public class SysDeptServiceImpl implements SysDeptService {
         if (checkExist(deptParam.getParentId(), deptParam.getName(), deptParam.getId())) {
             throw new ParamException("同一层级下存在相同名称的部门");
         }
+        // 更新前
         SysDept before = sysDeptMapper.selectByPrimaryKey(deptParam.getId());
         Preconditions.checkNotNull(before, "待更新的部门不存在");
 
+        // 更新后
         SysDept after = SysDept.builder().id(deptParam.getId())
                 .name(deptParam.getName())
                 .parentId(deptParam.getParentId())
@@ -66,29 +71,50 @@ public class SysDeptServiceImpl implements SysDeptService {
         after.setOperateIp("127.0.0.1"); //TODO
         after.setOperateTime(new Date());
 
+        // 更新其下的子节点
         updateWithChild(before, after);
     }
 
     /**
      * 更新子节点(未完)
-     * @param befor
-     * @param after
+     * @param befor   之前的部门
+     * @param after   之后的部门
      */
-    @Transactional
+    @Transactional   // 事务
     private void updateWithChild(SysDept befor, SysDept after) {
-        //TODO
+
+        String newLevelPrefix = after.getLevel();
+        String oldLevelPrefix = befor.getLevel();
+        // 如果层级不变的话，不更新子节点
+        if (!newLevelPrefix.equals(oldLevelPrefix)) {
+            List<SysDept> deptList = sysDeptMapper.getChildDeptListByLevel(oldLevelPrefix);
+            if (CollectionUtils.isNotEmpty(deptList)) {
+                for (SysDept dept : deptList) {
+                    String level = dept.getLevel();
+                    // 更新每个子节点，判断该节点是否在该部门的子节点
+                    if (level.indexOf(oldLevelPrefix) == 0) {
+                        level = newLevelPrefix + level.substring(oldLevelPrefix.length());
+                        dept.setLevel(level);
+                    }
+                }
+                // 批量更新level
+                sysDeptMapper.batchUpdateLevel(deptList);
+            }
+        }
+
+        sysDeptMapper.updateByPrimaryKey(after);
+
     }
 
     /***
-     * 判断是否存在同级部门
+     * 判断是否存在同级重复部门
      * @param parentId
      * @param depName
      * @param deptId
      * @return
      */
     private boolean checkExist(Integer parentId, String depName, Integer deptId) {
-        //TODO: 判断是否存在同级部门
-        return true;
+        return sysDeptMapper.countByNameAndParentId(parentId, depName, deptId) > 0;
     }
 
     /**
