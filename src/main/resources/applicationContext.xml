@@ -22,7 +22,7 @@
         <property name="minIdle" value="3" />
         <property name="maxActive" value="20" />
         <property name="maxWait" value="60000" />
-        <property name="filters" value="stat,wall" />
+        <property name="filters" value="stat" />
     </bean>
 
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">

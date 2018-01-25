@@ -106,7 +106,7 @@ public class SysTreeServiceImpl implements SysTreeService {
                 // 排序
                 Collections.sort(tempDeptList, deptSeqComparator);
                 // 设置下层部门
-                deptLevelDTO.setDeptLevelDTOList(tempDeptList);
+                deptLevelDTO.setDeptList(tempDeptList);
                 // 递归进入下层处理
                 transformDeptTree(tempDeptList, nextLevel, levelDeptMap);
             }

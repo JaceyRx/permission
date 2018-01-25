@@ -146,14 +146,14 @@
   </select>
 
   <select id="getChildDeptListByLevel" resultMap="BaseResultMap">
-    select
+    SELECT
       <include refid="Base_Column_List" />
     FROM
       sys_dept
     WHERE
       level
     LIKE
-      #{level} || '.%'
+      #{level}
   </select>
 
   <update id="batchUpdateLevel">
@@ -162,7 +162,7 @@
       SET
         level = #{sysDept.level}
       WHERE
-        id = #{sysDept.Id}
+        id = #{sysDept.id}
     </foreach>
   </update>
 

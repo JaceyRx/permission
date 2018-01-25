@@ -37,8 +37,8 @@ public class SysDeptServiceImpl implements SysDeptService {
         // 构造参数
         SysDept dept = SysDept.builder().name(deptParam.getName())
                 .parentId(deptParam.getParentId())
-                    .seq(deptParam.getSeq())
-                        .remark(deptParam.getRemark()).build();
+                .seq(deptParam.getSeq())
+                .remark(deptParam.getRemark()).build();
 
         // 计算设置当前部门层级Level
         // 根据上级id获取上级层级，并计算出当前层级
@@ -87,7 +87,7 @@ public class SysDeptServiceImpl implements SysDeptService {
         String oldLevelPrefix = befor.getLevel();
         // 如果层级不变的话，不更新子节点
         if (!newLevelPrefix.equals(oldLevelPrefix)) {
-            List<SysDept> deptList = sysDeptMapper.getChildDeptListByLevel(oldLevelPrefix);
+            List<SysDept> deptList = sysDeptMapper.getChildDeptListByLevel(befor.getLevel() + "." + befor.getId() + "%");
             if (CollectionUtils.isNotEmpty(deptList)) {
                 for (SysDept dept : deptList) {
                     String level = dept.getLevel();

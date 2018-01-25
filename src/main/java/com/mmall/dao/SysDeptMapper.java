@@ -33,9 +33,9 @@ public interface SysDeptMapper {
 
     /**
      * 批量更新部门层级
-     * @param sysDepts
+     * @param sysDeptList
      */
-    void batchUpdateLevel(@Param("sysDepts") List<SysDept> sysDepts);
+    void batchUpdateLevel(@Param("sysDeptList") List<SysDept> sysDeptList);
 
     /**
      * 根据部门名和父级id 查找在该层级下是否存在相同部门

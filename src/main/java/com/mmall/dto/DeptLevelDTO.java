@@ -19,7 +19,7 @@ import java.util.List;
 @ToString
 public class DeptLevelDTO extends SysDept {
 
-    private List<DeptLevelDTO> deptLevelDTOList = Lists.newArrayList();
+    private List<DeptLevelDTO> deptList = Lists.newArrayList();
 
     /** 原对象转dto */
     public static DeptLevelDTO adapt(SysDept dept) {
