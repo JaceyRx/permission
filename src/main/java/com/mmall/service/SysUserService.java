@@ -1,5 +1,6 @@
 package com.mmall.service;
 
+import com.mmall.model.SysUser;
 import com.mmall.param.UserParam;
 
 /**
@@ -15,5 +16,18 @@ public interface SysUserService {
      * @param userParam
      */
     void save(UserParam userParam);
+
+    /**
+     * 更新用户
+     * @param userParam
+     */
+    void update(UserParam userParam);
+
+    /**
+     *
+     * @param keyword
+     * @return
+     */
+    SysUser findByKeyword(String keyword);
 
 }

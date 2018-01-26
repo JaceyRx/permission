@@ -3,6 +3,7 @@
 <head>
     <title>部门管理</title>
     <jsp:include page="/common/backend_common.jsp"/>
+    <jsp:include page="/common/page.jsp"/>
 </head>
 <body class="no-skin" youdao="bind" style="background: white">
 <input id="gritter-light" checked="" type="checkbox" class="ace ace-switch ace-switch-5"/>
@@ -165,11 +166,33 @@
     {{/deptList}}
 </ol>
 </script>
+<script id="userListTemplate" type="x-tmpl-mustache">
+{{#userList}}
+<tr role="row" class="user-name odd" data-id="{{id}}"><!--even -->
+    <td><a href="#" class="user-edit" data-id="{{id}}">{{username}}</a></td>
+    <td>{{showDeptName}}</td>
+    <td>{{mail}}</td>
+    <td>{{telephone}}</td>
+    <td>{{#bold}}{{showStatus}}{{/bold}}</td> <!-- 此处套用函数对status做特殊处理 -->
+    <td>
+        <div class="hidden-sm hidden-xs action-buttons">
+            <a class="green user-edit" href="#" data-id="{{id}}">
+                <i class="ace-icon fa fa-pencil bigger-100"></i>
+            </a>
+            <a class="red user-acl" href="#" data-id="{{id}}">
+                <i class="ace-icon fa fa-flag bigger-100"></i>
+            </a>
+        </div>
+    </td>
+</tr>
+{{/userList}}
+</script>
 <script type="application/javascript">
     $(function() {
 
         var deptList; // 部门列表
         var deptMap = {}; // 存储map格式的部门信息
+        var userMap = {}; // 存储map格式的用户信息
         var optionStr = "";
         var lastClickDeptId = -1; // 最后一次点击的部门id
 
@@ -177,6 +200,9 @@
         var deptListTemplate = $("#deptListTemplate").html();
         // 使用Mustache 渲染处理
         Mustache.parse(deptListTemplate);
+        // 用户列表模板
+        var userListTemplate = $("#userListTemplate").html();
+        Mustache.parse(userListTemplate);
 
         loadDeptTree();
 
@@ -302,9 +328,68 @@
             loadUserList(deptId)
         }
 
+        // 加载部门列表
         function loadUserList(deptId) {
-            // TODO 加载用户
-            console.info("load userList , deptId = "+deptId)
+            var pageSize = $("#pageSize").val();
+            var url = "/sys/user/list.json?deptId=" + deptId;
+            // 当pageNo 为空时，赋予1
+            var pageNo = $("#userPage .pageNo").val() || 1;
+            $.ajax({
+                url: url,
+                data: {
+                    pageSize: pageSize,
+                    pageNo: pageNo
+                },
+                success: function (result) {
+                    renderUserListAndPage(result, url);
+                }
+            })
+        }
+
+        // 渲染用户列表和其分页信息
+        function renderUserListAndPage(result, url) {
+            if (result.ret) {
+                if (result.data.total > 0) {
+                    var rendered = Musache.render(userListTemplate, {
+                        userList: result.data.data,
+                        "showDeptName": function () {
+                            return deptMap[this.deptId].name;
+                        },
+                        "showStatus": function () {
+                            return this.status() == 1 ? "有效" : (this.status() == 0 ? "无效" : "删除" )
+                        },
+                        "bold": function () {
+                            return function (test, render) {
+                                var status = render(text);
+                                if (status == '有效') {
+                                    return "<span class='label label-sm label-success'>有效</span>";
+                                } else if(status == '无效') {
+                                    return "<span class='label label-sm label-warning'>无效</span>";
+                                } else {
+                                    return "<span class='label'>删除</span>";
+                                }
+                            }
+                        }
+                    });
+                    $("#userlist").html(rendered);
+                    bindUserClick();
+                    $.each(result.data.data, function (index, user) {
+                        userMap[user.id] = user;
+                    })
+                } else {
+                    $("#userlist").html("");
+                }
+                var pageSize = $("#pageSize").val();
+                var pageNo = $("#userPage .pageNo").val() || 1;
+                randerPage(url, result.data.total, pageNo, pageSize, result.data.total > 0 ? result.data.data.length : 0, "userPage", renderUserListAndPage)
+            } else {
+                showMessage("获取部门下用户列表", result.msg, false)
+            }
+        }
+
+        // 绑定用户点击方法
+        function bindUserClick() {
+            // TODO
         }
 
         // 添加部门add事件

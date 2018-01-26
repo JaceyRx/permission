@@ -1,28 +1,49 @@
 package com.mmall.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
 import java.util.Date;
 
+@Builder
+@NoArgsConstructor     // 生成无参构造方法注解
+@AllArgsConstructor    // 生成全部参数构造方法注解
+@ToString              // 生成toString 方法注解
 public class SysUser {
+
+    /** 用户id */
     private Integer id;
 
+    /** 用户名 */
     private String username;
 
+    /** 手机号 */
     private String telephone;
 
+    /** 邮箱 */
     private String mail;
 
+    /** 密码 */
     private String password;
 
+    /** 部门id */
     private Integer deptId;
 
+    /** 状态 */
     private Integer status;
 
+    /** 备注 */
     private String remark;
 
+    /** 操作者 */
     private String operator;
 
+    /** 操作时间 */
     private Date operateTime;
 
+    /** 操作者ip */
     private String operateIp;
 
     public Integer getId() {
