@@ -331,7 +331,7 @@
         // 加载部门列表
         function loadUserList(deptId) {
             var pageSize = $("#pageSize").val();
-            var url = "/sys/user/list.json?deptId=" + deptId;
+            var url = "/sys/user/page.json?deptId=" + deptId;
             // 当pageNo 为空时，赋予1
             var pageNo = $("#userPage .pageNo").val() || 1;
             $.ajax({
@@ -350,16 +350,16 @@
         function renderUserListAndPage(result, url) {
             if (result.ret) {
                 if (result.data.total > 0) {
-                    var rendered = Musache.render(userListTemplate, {
+                    var rendered = Mustache.render(userListTemplate, {
                         userList: result.data.data,
                         "showDeptName": function () {
                             return deptMap[this.deptId].name;
                         },
                         "showStatus": function () {
-                            return this.status() == 1 ? "有效" : (this.status() == 0 ? "无效" : "删除" )
+                            return this.status == 1 ? "有效" : (this.status == 0 ? "无效" : "删除" )
                         },
                         "bold": function () {
-                            return function (test, render) {
+                            return function (text, render) {
                                 var status = render(text);
                                 if (status == '有效') {
                                     return "<span class='label label-sm label-success'>有效</span>";
@@ -371,7 +371,7 @@
                             }
                         }
                     });
-                    $("#userlist").html(rendered);
+                    $("#userList").html(rendered);
                     bindUserClick();
                     $.each(result.data.data, function (index, user) {
                         userMap[user.id] = user;
@@ -381,15 +381,89 @@
                 }
                 var pageSize = $("#pageSize").val();
                 var pageNo = $("#userPage .pageNo").val() || 1;
-                randerPage(url, result.data.total, pageNo, pageSize, result.data.total > 0 ? result.data.data.length : 0, "userPage", renderUserListAndPage)
+                renderPage(url, result.data.total, pageNo, pageSize, result.data.total > 0 ? result.data.data.length : 0, "userPage", renderUserListAndPage)
             } else {
                 showMessage("获取部门下用户列表", result.msg, false)
             }
         }
 
+        // 用户新增
+        $(".user-add").click(function (e) {
+            $("#dialog-user-form").dialog({
+                modal: true,
+                title: "新增用户",
+                open: function(event, ui) {
+                    // 隐藏关闭按钮
+                    $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+                    // 为列表树设置选项
+                    optionStr = "";
+                    recursiveRenderDeptSelect(deptList, 1);
+                    $("#userForm")[0].reset();  // 如果之前执行过添加操作的话，会有值，所以这里reset下
+                    $("#deptSelectId").html(optionStr);
+                },
+                buttons : {
+                    "添加": function(e) {
+                        e.preventDefault();
+                        updateUser(true, function (data) {
+                            $("#dialog-user-form").dialog("close");
+                            loadUserList(lastClickDeptId);
+                        }, function (data) {
+                            showMessage("新增用户", data.msg, false);
+                        })
+                    },
+                    "取消": function () {
+                        $("#dialog-user-form").dialog("close");
+                    }
+                }
+            });
+        });
+        
         // 绑定用户点击方法
         function bindUserClick() {
-            // TODO
+            // 点击部门编辑
+            $(".user-edit").click(function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var userId = $(this).attr("data-id");  // 获得选中的部门的id
+                $("#dialog-user-form").dialog({
+                    modal: true,
+                    title: "编辑部门",
+                    open: function(event, ui) {
+                        // 隐藏关闭按钮
+                        $(".ui-dialog-titlebar-close", $(this).parent()).hide();
+                        // 为列表树设置选项
+                        optionStr = "";
+                        recursiveRenderDeptSelect(deptList, 1);
+                        $("#userForm")[0].reset();  // 如果之前执行过添加操作的话，会有值，所以这里reset下
+                        $("#deptSelectId").html(optionStr);
+                        // 填充元素
+                        var targetUser = userMap[userId];  // 获取部门数据
+                        if (targetUser) {
+                            $("#deptSelectId").val(targetUser.deptId);   // 设置选中项
+                            $("#userName").val(targetUser.username);   //
+                            $("#userMail").val(targetUser.mail);   //
+                            $("#userTelephone").val(targetUser.telephone);   //
+                            $("#userStatus").val(targetUser.status);   //
+                            $("#userRemark").val(targetUser.remark);   //
+                            $("#userId").val(targetUser.id);   //
+                        }
+                    },
+                    buttons : {
+                        "更新": function(e) {
+                            e.preventDefault();
+                            updateUser(false, function (data) {
+                                $("#dialog-user-form").dialog("close");
+                                loadUserList(lastClickDeptId);
+                            }, function (data) {
+                                showMessage("更新用户", data.msg, false);
+                            })
+                        },
+                        "取消": function () {
+                            $("#dialog-user-form").dialog("close");
+                        }
+                    }
+                });
+            });
         }
 
         // 添加部门add事件
@@ -427,6 +501,27 @@
             $.ajax({
                 url: isCreate ? "/sys/dept/save.json" : "/sys/dept/update.json",
                 data: $("#deptForm").serializeArray(),
+                type: 'POST',
+                success: function(result) {
+                    if (result.ret) {
+                        loadDeptTree();
+                        if (successCallback) {
+                            successCallback(result);
+                        }
+                    } else {
+                        if (failCallback) {
+                            failCallback(result);
+                        }
+                    }
+                }
+            })
+        }
+
+        // 保存更新用户
+        function updateUser(isCreate, successCallback, failCallback) {
+            $.ajax({
+                url: isCreate ? "/sys/user/save.json" : "/sys/user/update.json",
+                data: $("#userForm").serializeArray(),
                 type: 'POST',
                 success: function(result) {
                     if (result.ret) {

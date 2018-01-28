@@ -1,22 +1,41 @@
 package com.mmall.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+
 import java.util.Date;
 
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class SysAcl {
+
+    /** 权限点id */
     private Integer id;
 
+    /** 权限点code */
     private String code;
 
+    /** 权限点名称 */
     private String name;
 
+    /** 权限点所属权限模块id */
     private Integer aclModuleId;
 
+    /** 权限点URL */
     private String url;
 
+    /**
+     * 权限点类型
+     * 1：菜单，2：按钮，3：其他
+     */
     private Integer type;
 
+    /** 权限点状态 */
     private Integer status;
 
+    /** 权限点排序 */
     private Integer seq;
 
     private String remark;

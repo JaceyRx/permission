@@ -1,12 +1,14 @@
 package com.mmall.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.mmall.common.RequestHolder;
 import com.mmall.dao.SysDeptMapper;
 import com.mmall.exception.ParamException;
 import com.mmall.model.SysDept;
 import com.mmall.param.DeptParam;
 import com.mmall.service.SysDeptService;
 import com.mmall.util.BeanValidator;
+import com.mmall.util.IpUtil;
 import com.mmall.util.LevelUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -43,8 +45,10 @@ public class SysDeptServiceImpl implements SysDeptService {
         // 计算设置当前部门层级Level
         // 根据上级id获取上级层级，并计算出当前层级
         dept.setLevel(LevelUtil.calculateLevel(getLevel(deptParam.getParentId()), deptParam.getParentId()));
-        dept.setOperator("system"); //TODO
-        dept.setOperateIp("127.0.0.1"); //TODO
+        // 设置操作用户
+        dept.setOperator(RequestHolder.getCurrentUser().getUsername());
+        // 设置操作者ip
+        dept.setOperateIp(IpUtil.getUserIP(RequestHolder.getCurrentRequest()));
         dept.setOperateTime(new Date());
 
         sysDeptMapper.insertSelective(dept);
@@ -67,8 +71,8 @@ public class SysDeptServiceImpl implements SysDeptService {
                 .seq(deptParam.getSeq())
                 .remark(deptParam.getRemark()).build();
         after.setLevel(LevelUtil.calculateLevel(getLevel(deptParam.getParentId()), deptParam.getParentId()));
-        after.setOperator("system-update"); //TODO
-        after.setOperateIp("127.0.0.1"); //TODO
+        after.setOperator(RequestHolder.getCurrentUser().getUsername());
+        after.setOperateIp(IpUtil.getUserIP(RequestHolder.getCurrentRequest()));
         after.setOperateTime(new Date());
 
         // 更新其下的子节点
@@ -76,7 +80,7 @@ public class SysDeptServiceImpl implements SysDeptService {
     }
 
     /**
-     * 更新子节点(未完)
+     * 更新子节点
      * @param befor   之前的部门
      * @param after   之后的部门
      */

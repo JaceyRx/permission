@@ -9,6 +9,7 @@ import lombok.ToString;
 import java.util.List;
 
 /**
+ * 统一返回的分页结果
  * @auther ruanjunxu
  * @email ruanjunxu@qq.com
  * @create 2018/1/26 15:14
@@ -21,5 +22,5 @@ public class PageResult<T> {
 
     private List<T> data = Lists.newArrayList();
 
-    private int total;
+    private int total = 0;
 }

@@ -2,6 +2,7 @@ package com.mmall.common;
 
 import com.mmall.util.JsonMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -51,6 +52,12 @@ public class HttpInterceptor extends HandlerInterceptorAdapter{
         Long start = (Long) request.getAttribute(START_TIME);
         Long end = System.currentTimeMillis();
         log.info("request completed. url:{}, cost:{} ,params:{}", url, end - start,JsonMapper.obj2String(parameterMap));
-
+        removeThreadLocalInfo();
     }
+
+    /** 移除当前线程信息 */
+    public void removeThreadLocalInfo() {
+        RequestHolder.remove();
+    }
+
 }

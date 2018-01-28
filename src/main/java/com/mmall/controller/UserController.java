@@ -67,14 +67,14 @@ public class UserController {
         if (StringUtils.isNotBlank(ret)) {
             request.setAttribute("ret", request);
         }
-        String path = "signin.jsp";
-        request.getRequestDispatcher(password).forward(request, response);
+        String path = "/signin.jsp";
+        request.getRequestDispatcher(path).forward(request, response);
     }
 
     @RequestMapping("/logout.page")
     public void logout(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.getSession().invalidate();
-        String path = "signin.jsp";
+        String path = "/signin.jsp";
         response.sendRedirect(path);
     }
 

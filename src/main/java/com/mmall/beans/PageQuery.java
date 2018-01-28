@@ -6,6 +6,8 @@ import lombok.Setter;
 import javax.validation.constraints.Min;
 
 /**
+ * 前端分页参数类
+ *
  * @auther ruanjunxu
  * @email ruanjunxu@qq.com
  * @create 2018/1/26 15:13

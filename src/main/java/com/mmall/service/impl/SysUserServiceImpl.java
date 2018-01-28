@@ -1,18 +1,23 @@
 package com.mmall.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.mmall.beans.PageQuery;
+import com.mmall.beans.PageResult;
+import com.mmall.common.RequestHolder;
 import com.mmall.dao.SysUserMapper;
 import com.mmall.exception.ParamException;
 import com.mmall.model.SysUser;
 import com.mmall.param.UserParam;
 import com.mmall.service.SysUserService;
 import com.mmall.util.BeanValidator;
+import com.mmall.util.IpUtil;
 import com.mmall.util.MD5Util;
 import com.mmall.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @auther ruanjunxu
@@ -44,8 +49,8 @@ public class SysUserServiceImpl implements SysUserService {
                 .telephone(userParam.getTelephone()).username(userParam.getUsername())
                 .deptId(userParam.getDeptId()).status(userParam.getStatus()).password(encryptedPassword)
                 .remark(userParam.getRemark()).build();
-        sysUser.setOperator("system"); //TODO
-        sysUser.setOperateIp("127.0.0.1"); //TODO
+        sysUser.setOperator(RequestHolder.getCurrentUser().getUsername());
+        sysUser.setOperateIp(IpUtil.getUserIP(RequestHolder.getCurrentRequest()));
         sysUser.setOperateTime(new Date());
 
         // TODO: 要有发送邮件通知用户操作，告诉其密码
@@ -53,6 +58,7 @@ public class SysUserServiceImpl implements SysUserService {
         sysUserMapper.insertSelective(sysUser);
      }
 
+    @Override
     public void update(UserParam userParam) {
          BeanValidator.check(userParam);
          if (checkEmailExist(userParam.getMail(), userParam.getId())) {
@@ -74,6 +80,24 @@ public class SysUserServiceImpl implements SysUserService {
     public SysUser findByKeyword(String keyword) {
         return sysUserMapper.findByKeyword(keyword);
     }
+
+    /**
+     * 根据部门id 分页获取用户
+     * @param deptId
+     * @param pageQuery
+     * @return
+     */
+    @Override
+    public PageResult<SysUser> getPageByDeptId(int deptId, PageQuery pageQuery) {
+        BeanValidator.check(pageQuery);
+        int count = sysUserMapper.countByDeptId(deptId);
+        if (count > 0) {
+            List<SysUser> list = sysUserMapper.getPageByDeptId(deptId, pageQuery);
+            return PageResult.<SysUser>builder().total(count).data(list).build();
+        }
+        return PageResult.<SysUser>builder().build();
+    }
+
 
     /**
      * 检测邮箱是否存在

@@ -1,5 +1,7 @@
 package com.mmall.service;
 
+import com.mmall.beans.PageQuery;
+import com.mmall.beans.PageResult;
 import com.mmall.model.SysUser;
 import com.mmall.param.UserParam;
 
@@ -24,10 +26,16 @@ public interface SysUserService {
     void update(UserParam userParam);
 
     /**
-     *
+     * 根据电话或email查找用户
      * @param keyword
      * @return
      */
     SysUser findByKeyword(String keyword);
+
+    /**
+     * 根据部门id 分页获取用户
+     * @return
+     */
+    PageResult<SysUser> getPageByDeptId(int deptId, PageQuery pageQuery);
 
 }

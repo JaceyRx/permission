@@ -1,5 +1,6 @@
 package com.mmall.service;
 
+import com.mmall.dto.AclModuleLevelDTO;
 import com.mmall.dto.DeptLevelDTO;
 
 import java.util.List;
@@ -16,5 +17,11 @@ public interface SysTreeService {
      * @return
      */
     List<DeptLevelDTO> deptTree();
+
+    /**
+     * 权限模块树
+     * @return
+     */
+    List<AclModuleLevelDTO> aclModuleTree();
 
 }
