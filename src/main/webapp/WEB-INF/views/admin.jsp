@@ -118,44 +118,44 @@
 
         <ul class="nav nav-list">
             <li class="">
-                <a href="#" class="dropdown-toggle">
-                    <i class="menu-icon fa fa-desktop"></i>
-                    <span class="menu-text"> 权限管理 </span>
-                    <b class="arrow fa fa-angle-down"></b>
-                </a>
+            <a href="#" class="dropdown-toggle">
+            <i class="menu-icon fa fa-desktop"></i>
+            <span class="menu-text"> 权限管理 </span>
+            <b class="arrow fa fa-angle-down"></b>
+            </a>
 
-                <b class="arrow"></b>
+            <b class="arrow"></b>
 
-                <ul class="submenu">
-                    <li class="">
-                        <a class="popstyle" href="/sys/dept/dept.page" target="_blank">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            用户管理
-                        </a>
-                        <b class="arrow"></b>
-                    </li>
-                    <li class="">
-                        <a class="popstyle" href="/sys/role/role.page" target="_blank">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            角色管理
-                        </a>
-                        <b class="arrow"></b>
-                    </li>
-                    <li class="">
-                        <a class="popstyle" href="/sys/aclModule/acl.page" target="_blank">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            权限管理
-                        </a>
-                        <b class="arrow"></b>
-                    </li>
-                    <li class="">
-                        <a class="popstyle" href="/sys/log/log.page" target="_blank">
-                            <i class="menu-icon fa fa-caret-right"></i>
-                            权限更新记录
-                        </a>
-                        <b class="arrow"></b>
-                    </li>
-                </ul>
+            <ul class="submenu">
+            <li class="">
+            <a class="popstyle" href="/sys/dept/dept.page" target="_blank">
+            <i class="menu-icon fa fa-caret-right"></i>
+            用户管理
+            </a>
+            <b class="arrow"></b>
+            </li>
+            <li class="">
+            <a class="popstyle" href="/sys/role/role.page" target="_blank">
+            <i class="menu-icon fa fa-caret-right"></i>
+            角色管理
+            </a>
+            <b class="arrow"></b>
+            </li>
+            <li class="">
+            <a class="popstyle" href="/sys/aclModule/acl.page" target="_blank">
+            <i class="menu-icon fa fa-caret-right"></i>
+            权限管理
+            </a>
+            <b class="arrow"></b>
+            </li>
+            <li class="">
+            <a class="popstyle" href="/sys/log/log.page" target="_blank">
+            <i class="menu-icon fa fa-caret-right"></i>
+            权限更新记录
+            </a>
+            <b class="arrow"></b>
+            </li>
+            </ul>
             </li>
         </ul>
         <!-- /.nav-list -->
@@ -230,6 +230,63 @@
 <script src="/assets/js/ace.min.js"></script>
 
 <script>
+
+    $(document).ready(function () {
+        $(function () {
+            var emptyMenuTemplate =  $('#emptyMenuTemplate').html();
+            var urlMenuTemplate =  $('#urlMenuTemplate').html();
+            var secondMenuTemplate =  $('#secondMenuTemplate').html();
+            $.ajax({
+                url: "/sys/user/menu.json",
+                success : function (result) {
+                    if(result.ret) {
+                        var menuList = result.data;
+                        $(menuList).each(function (i, firstMenu) {
+                            if(firstMenu.url) { // 如果首层就有url的话
+                                var appendFirst = Mustache.render(urlMenuTemplate, firstMenu);
+                                $(".nav-list").append('<li class="">' + appendFirst + "</li>");
+                            }  else { // 如果是两层的话
+                                var appendFirst = Mustache.render(emptyMenuTemplate, firstMenu);
+                                var appendSend = Mustache.render(secondMenuTemplate, {
+                                    subList: firstMenu.subList
+                                });
+                                $(".nav-list").append('<li class="">' + appendFirst + appendSend + "</li>");
+                            }
+                            handleCommonBehavior();
+                        });
+                    } else {
+                        showMessage("加载菜单", result.msg, false);
+                    }
+                }
+            })
+        });
+
+        function handleCommonBehavior() {
+            $(".popstyle").removeAttr("target");
+            $(".popstyle").each(function () {
+                var $this = $(this);
+                tmp = $this.attr("href");
+                $this.attr("data", tmp);
+                $this.attr("href", "javascript:void(0)");
+            });
+
+            $(".popstyle").click(function () {
+                var $this = $(this);
+                $("iframe").attr(
+                    'src',
+                    $this.attr("data")
+                );
+            });
+        }
+
+        $(".direct").click(function () {
+            var $this = $(this);
+            $("iframe").attr(
+                'src',
+                $this.attr("data-value")
+            );
+        });
+    });
 </script>
 </body>
 </html>
